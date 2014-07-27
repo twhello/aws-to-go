@@ -178,8 +178,8 @@ type ReportTaskRunnerHeartbeatResult struct {
 // A comparision that is used to determine whether a query should return this object.
 // [http://docs.aws.amazon.com/datapipeline/latest/APIReference/API_Selector.html]
 type Selector struct {
-	FieldName string   `json:"fieldName,omitempty"`
-	Operator  Operator `json:"operator,omitempty"`
+	FieldName string    `json:"fieldName,omitempty"`
+	Operator  *Operator `json:"operator,omitempty"`
 }
 
 // The output from the SetTaskStatus action.

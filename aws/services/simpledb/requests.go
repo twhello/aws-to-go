@@ -64,7 +64,7 @@ func NewCreateDomainRequest(domainName string) *CreateDomainRequest {
 type DeleteAttributesRequest struct {
 	Attributes []Attribute `name:"Attribute.#.,omitempty" base:"1"`
 	DomainName string      `name:"DomainName"`
-	Expected   Expected    `name:"Expected.,omitempty"`
+	Expected   *Expected    `name:"Expected.,omitempty"`
 	ItemName   string      `name:"ItemName"`
 }
 
@@ -80,7 +80,7 @@ func (r *DeleteAttributesRequest) AddAttribute(name, value string) {
 
 // Set the Expected check.
 func (r *DeleteAttributesRequest) SetExpected(name, value string, exists bool) {
-	r.Expected = Expected{name, value, exists}
+	r.Expected = &Expected{name, value, exists}
 }
 
 /*****************************************************************************/
@@ -147,7 +147,7 @@ func NewListDomainsRequest() *ListDomainsRequest {
 type PutAttributesRequest struct {
 	Attributes []Attribute `name:"Attribute.#." base:"1"`
 	DomainName string      `name:"DomainName"`
-	Expected   Expected    `name:"Expected.,omitempty"`
+	Expected   *Expected    `name:"Expected.,omitempty"`
 	ItemName   string      `name:"ItemName"`
 }
 
@@ -163,7 +163,7 @@ func (r *PutAttributesRequest) AddAttribute(name, value string, replace bool) {
 
 // Set the Expected check.
 func (r *PutAttributesRequest) SetExpected(name, value string, exists bool) {
-	r.Expected = Expected{name, value, exists}
+	r.Expected = &Expected{name, value, exists}
 }
 
 /*****************************************************************************/

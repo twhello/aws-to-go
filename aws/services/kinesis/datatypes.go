@@ -76,7 +76,7 @@ type ListStreamsResult struct {
 // [http://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecordResult.html]
 type PutRecordResult struct {
 	SequenceNumber string `json:"SequenceNumber"`
-	ShardId        string `json:"SharedId"`
+	ShardId        string `json:"ShardId"`
 }
 
 // The unit of data of the Amazon Kinesis stream, which is composed of a sequence

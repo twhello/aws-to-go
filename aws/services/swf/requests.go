@@ -8,7 +8,7 @@ import ()
 // [http://docs.aws.amazon.com/amazonswf/latest/apireference/API_CountClosedWorkflowExecutions.html]
 type CountClosedWorkflowExecutionsRequest struct {
 	CloseStatusFilter *CloseStatusFilter       `json:"closeStatusFilter,omitempty"`
-	CloseTimeFilter   ExecutionTimeFilter      `json:"closeTimeFilter,omitempty"`
+	CloseTimeFilter   *ExecutionTimeFilter     `json:"closeTimeFilter,omitempty"`
 	Domain            string                   `json:"domain"`
 	ExecutionFilter   *WorkflowExecutionFilter `json:"executionFilter,omitempty"`
 	StartTimeFilter   *ExecutionTimeFilter     `json:"startTimeFilter,omitempty"`
@@ -29,7 +29,7 @@ func NewCountClosedWorkflowExecutionsRequest(domain string) *CountClosedWorkflow
 type CountOpenWorkflowExecutionsRequest struct {
 	Domain           string                   `json:"domain"`
 	ExecutionFilter  *WorkflowExecutionFilter `json:"executionFilter,omitempty"`
-	StartTimerFilter ExecutionTimeFilter      `json:"startTimerFilter"`
+	StartTimerFilter *ExecutionTimeFilter     `json:"startTimerFilter"`
 	TagFilter        *TagFilter               `json:"tagFilter,omitempty"`
 	TypeFilter       *WorkflowTypeFilter      `json:"typeFilter,omitempty"`
 }
@@ -37,7 +37,7 @@ type CountOpenWorkflowExecutionsRequest struct {
 // Creates a new CountOpenWorkflowExecutionsRequest.
 // (domain string) The name of the domain containing the workflow executions to count.
 // (startTimerFilter ExecutionTimeFilter) Specifies the start time criteria that workflow executions must meet in order to be counted.
-func NewCountOpenWorkflowExecutionsRequest(domain string, startTimerFilter ExecutionTimeFilter) *CountOpenWorkflowExecutionsRequest {
+func NewCountOpenWorkflowExecutionsRequest(domain string, startTimerFilter *ExecutionTimeFilter) *CountOpenWorkflowExecutionsRequest {
 	return &CountOpenWorkflowExecutionsRequest{Domain: domain, StartTimerFilter: startTimerFilter}
 }
 
@@ -230,7 +230,7 @@ func NewListActivityTypesRequest(domain string, registrationStatus Status) *List
 // [http://docs.aws.amazon.com/amazonswf/latest/apireference/API_ListClosedWorkflowExecutions.html]
 type ListClosedWorkflowExecutionsRequest struct {
 	CloseStatusFilter *CloseStatusFilter       `json:"closeStatusFilter,omitempty"`
-	CloseTimeFilter   ExecutionTimeFilter      `json:"closeTimeFilter,omitempty"`
+	CloseTimeFilter   *ExecutionTimeFilter     `json:"closeTimeFilter,omitempty"`
 	Domain            string                   `json:"domain"`
 	ExecutionFilter   *WorkflowExecutionFilter `json:"executionFilter,omitempty"`
 	MaximumPageSize   int                      `json:"maximumPageSize,omitempty"`

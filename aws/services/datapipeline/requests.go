@@ -119,9 +119,9 @@ func NewListPipelinesRequest() *ListPipelinesRequest {
 // Task runners call this action to receive a task to perform from AWS Data Pipeline.
 // [http://docs.aws.amazon.com/datapipeline/latest/APIReference/API_PollForTask.html]
 type PollForTaskRequest struct {
-	Hostname         string           `json:"hostname,omitempty"`
-	InstanceIdentity InstanceIdentity `json:"instanceIdentity,omitempty"`
-	WorkerGroup      string           `json:"workerGroup"`
+	Hostname         string            `json:"hostname,omitempty"`
+	InstanceIdentity *InstanceIdentity `json:"instanceIdentity,omitempty"`
+	WorkerGroup      string            `json:"workerGroup"`
 }
 
 // Creates a new PollForTaskRequest.
@@ -151,7 +151,7 @@ type QueryObjectsRequest struct {
 	Limit      int    `json:"limit,omitempty"`
 	Marker     string `json:"marker,omitempty"`
 	PipelineId string `json:"pipelineId"`
-	Query      Query  `json:"query,omitempty"`
+	Query      *Query `json:"query,omitempty"`
 	Sphere     string `json:"sphere"`
 }
 

@@ -12,6 +12,7 @@ package aws
 import (
 	"github.com/twhello/aws-to-go/aws/auth"
 	"github.com/twhello/aws-to-go/aws/regions"
+	"github.com/twhello/aws-to-go/aws/services/datapipeline"
 	"github.com/twhello/aws-to-go/aws/services/dynamodb"
 	"github.com/twhello/aws-to-go/aws/services/kinesis"
 	"github.com/twhello/aws-to-go/aws/services/s3"
@@ -65,6 +66,16 @@ func NewClientByFile(path, regionName *string) Client {
 /******************************************************************************
  * Service Access Methods
  */
+
+// AWS Data Pipeline is a web service that you can use to automate the movement and transformation of data.
+// With AWS Data Pipeline, you can define data-driven workflows, so that tasks can be dependent on the
+// successful completion of previous tasks.
+// [http://aws.amazon.com/documentation/data-pipeline/]
+func (c Client) DataPipeling() *datapipeline.DataPipelineService {
+	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
+	return datapipeline.NewService(cred, regions.Config(c.RegionName))
+}
+
 
 // Amazon DynamoDB is a fully managed NoSQL database service that provides fast and
 // predictable performance with seamless scalability. You can use Amazon DynamoDB to

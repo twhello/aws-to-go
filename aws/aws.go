@@ -10,8 +10,13 @@
 package aws
 
 import (
+	"bufio"
 	"github.com/twhello/aws-to-go/aws/auth"
 	"github.com/twhello/aws-to-go/aws/regions"
+	"github.com/twhello/aws-to-go/aws/services/cloudwatch"
+	"github.com/twhello/aws-to-go/aws/services/cloudwatchlogs"
+	"github.com/twhello/aws-to-go/aws/services/cognito"
+	"github.com/twhello/aws-to-go/aws/services/cognitosync"
 	"github.com/twhello/aws-to-go/aws/services/datapipeline"
 	"github.com/twhello/aws-to-go/aws/services/dynamodb"
 	"github.com/twhello/aws-to-go/aws/services/kinesis"
@@ -21,7 +26,9 @@ import (
 	"github.com/twhello/aws-to-go/aws/services/sns"
 	"github.com/twhello/aws-to-go/aws/services/sqs"
 	"github.com/twhello/aws-to-go/aws/services/swf"
+	"log"
 	"os"
+	"strings"
 )
 
 // The AWS Client struct.
@@ -42,40 +49,137 @@ func NewClient(accessKeyId, secretKey string, regionName *string) Client {
 // Creates a new Client from environmental variables AWS_ACCESS_KEY_ID and AWS_SECRET_KEY.
 // (regionName *string) Name of region. nil defaults to env var AWS_REGION or US_EAST_1.
 func NewClientByEnvars(regionName *string) Client {
-	accessKeyId := os.Getenv("AWS_ACCESS_KEY_ID")
-	secretKey := os.Getenv("AWS_SECRET_KEY")
-	if regionName == nil {
-		rn := os.Getenv("AWS_REGION")
-		if rn == "" {
-			rn = "us-east-1"
-		}
-		regionName = &rn
+	
+	creds, err := auth.NewEnvCredentials()
+	if err != nil {
+		log.Panicln(err.Error())
 	}
-	return Client{accessKeyId, secretKey, *regionName}
+	
+	var region string
+	if regionName == nil {
+		region = os.Getenv("AWS_REGION")
+		if region == "" {
+			region = "us-east-1"
+		}
+	} else {
+		region = *regionName
+	}
+	
+	return Client{creds.AccessKeyId(), creds.SecretKey(), region}
 }
 
-// Creates a new Client from a local PROPERTIES file.
-// (path *string) Path to file. nil defaults to "AWSCredentials.properties".
+// Creates a new Client from a local PROPERTIES file:
+//
+//	# Insert your AWS Credentials from http://aws.amazon.com/security-credentials
+//	secretKey=###############################
+//	accessKey=###################
+//	region=us-west-1
+//
+// (path *string) Path to file. nil defaults to "AwsCredentials.properties".
 // (regionName *string) Name of region. nil defaults to US_EAST_1 or file setting.
 func NewClientByFile(path, regionName *string) Client {
-	var accessKeyId string
-	var secretKey string
-	return Client{accessKeyId, secretKey, *regionName}
+
+	var filePath string
+
+	if path == nil {
+		filePath = "AwsCredentials.properties"
+	} else {
+		filePath = *path
+	}
+
+	accessKeyId := ""
+	secretKey := ""
+	region := "us-east-1"
+
+	if regionName != nil {
+		region = *regionName
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Panicf("aws.NewClientByFile() could not read the file: %s\n", err.Error())
+	}
+
+	defer file.Close()
+	r := bufio.NewReader(file)
+
+	for {
+		line, _, e := r.ReadLine()
+		if e != nil {
+			break
+		}
+
+		if line[0] == '#' {
+			continue
+		}
+
+		keyVal := strings.Split(string(line), "=")
+		if keyVal[0] == "secretKey" {
+			accessKeyId = keyVal[1]
+		} else if keyVal[0] == "accessKey" {
+			secretKey = keyVal[1]
+		} else if regionName == nil && keyVal[0] == "region" {
+			region = keyVal[1]
+		}
+	}
+
+	if accessKeyId == "" || secretKey == "" {
+		log.Panicln("The file is missing the Access Key and/or Secret Key.")
+	}
+
+	return Client{accessKeyId, secretKey, region}
 }
 
 /******************************************************************************
  * Service Access Methods
  */
 
-// AWS Data Pipeline is a web service that you can use to automate the movement and transformation of data.
-// With AWS Data Pipeline, you can define data-driven workflows, so that tasks can be dependent on the
-// successful completion of previous tasks.
+// Amazon CloudWatch is a web service that enables you to publish, monitor, and manage
+// various metrics, as well as configure alarm actions based on data from metrics.
+// [http://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/Welcome.html]
+func (c Client) CloudWatch() *cloudwatch.CloudWatchService {
+	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
+	return cloudwatch.NewService(cred, regions.Config(c.RegionName))
+}
+
+// Amazon CloudWatch Logs enables you to monitor, store, and access your system,
+// application, and custom log files.
+// [http://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/Welcome.html]
+func (c Client) CloudWatchLogs() *cloudwatchlogs.CloudWatchLogsService {
+	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
+	return cloudwatchlogs.NewService(cred, regions.Config(c.RegionName))
+}
+
+// Amazon Cognito is a web service that facilitates the delivery of scoped, temporary credentials
+// to mobile devices or other untrusted environments. Amazon Cognito uniquely identifies a device
+// or user and supplies the user with a consistent identity throughout the lifetime of an application.
+// [http://docs.aws.amazon.com/cognitoidentity/latest/APIReference/Welcome.html]
+func (c Client) Cognito() *cognito.CognitoService {
+	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
+	return cognito.NewService(cred, regions.Config(c.RegionName))
+}
+
+// Amazon Cognito Sync provides an AWS service and client library that enable cross-device
+// syncing of application-related user data. High-level client libraries are available for
+// both iOS and Android. You can use these libraries to persist data locally so that it's
+// available even if the device is offline. Developer credentials don't need to be stored
+// on the mobile device to access the service. You can use Amazon Cognito to obtain a
+// normalized user ID and credentials. User data is persisted in a dataset that can store
+// up to 1 MB of key-value pairs, and you can have up to 20 datasets per user identity.
+// [http://docs.aws.amazon.com/cognitosync/latest/APIReference/Welcome.html]
+func (c Client) CognitoSync() *cognitosync.CognitoSyncService {
+	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
+	return cognitosync.NewService(cred, regions.Config(c.RegionName))
+}
+
+// AWS Data Pipeline is a web service that you can use to automate the movement and transformation
+// of data. With AWS Data Pipeline, you can define data-driven workflows, so that tasks can be
+// dependent on the successful completion of previous tasks.
 // [http://aws.amazon.com/documentation/data-pipeline/]
-func (c Client) DataPipeling() *datapipeline.DataPipelineService {
+func (c Client) DataPipeline() *datapipeline.DataPipelineService {
 	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
 	return datapipeline.NewService(cred, regions.Config(c.RegionName))
 }
-
 
 // Amazon DynamoDB is a fully managed NoSQL database service that provides fast and
 // predictable performance with seamless scalability. You can use Amazon DynamoDB to

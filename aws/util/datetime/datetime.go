@@ -13,6 +13,10 @@ const (
 // Helper for JSON API DateTime.
 type JsonDate float64
 
+func NewJsonDate(t time.Time) JsonDate {
+	return JsonDate(t.UnixNano())
+}
+
 // Convert the JSON data type date to time.Time.
 func (d JsonDate) Time() time.Time {
 	return time.Unix(int64(d), 0)

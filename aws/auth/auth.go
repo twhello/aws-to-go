@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/twhello/aws-to-go/aws/interfaces"
+	"bufio"
 	"bytes"
 	"crypto/hmac"
 	"crypto/md5"
@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/twhello/aws-to-go/aws/interfaces"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -48,10 +49,49 @@ func NewEnvCredentials() (interfaces.IAWSCredentials, error) {
 	return &Credentials{accessKeyId, secretKey}, nil
 }
 
-// Instantiate a new Credenials object from local PROPERTIES file.
-func NewFileCredentials() (interfaces.IAWSCredentials, error) {
-	// TODO Implement function
-	return &Credentials{"", ""}, nil
+// Instantiate a new Credentials object from local PROPERTIES file.
+//
+//	# Insert your AWS Credentials from http://aws.amazon.com/security-credentials
+//	secretKey=###############################
+//	accessKey=###################
+//	region=us-west-1
+//
+func NewFileCredentials(filePath string) (interfaces.IAWSCredentials, error) {
+
+	accessKeyId := ""
+	secretKey := ""
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+	r := bufio.NewReader(file)
+
+	for {
+		line, _, e := r.ReadLine()
+		if e != nil {
+			break
+		}
+		
+		if line[0] == '#' {
+			continue
+		}
+		
+		keyVal := strings.Split(string(line), "=")
+		if keyVal[0] == "secretKey" {
+			accessKeyId = keyVal[1]
+		} else if keyVal[0] == "accessKey" {
+			secretKey = keyVal[1]
+		}
+	}
+
+	if accessKeyId == "" || secretKey == "" {
+		return nil, errors.New("The file is missing the Access Key and/or Secret Key.")
+	}
+
+	return &Credentials{accessKeyId, secretKey}, nil
 }
 
 func (c Credentials) AccessKeyId() string {

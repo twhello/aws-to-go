@@ -18,7 +18,7 @@ import (
 
 const ServiceName = "monitoring"
 
-// The CloudWatch Service object. Use ses.NewService().
+// The CloudWatch Service object. Use cloudwatch.NewService().
 type CloudWatchService struct {
 	cred     interfaces.IAWSCredentials
 	region   *regions.Region

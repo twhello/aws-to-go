@@ -18,7 +18,7 @@ import (
 
 const ServiceName = "sns"
 
-// The SQS Service object. Use ses.NewService().
+// The SNS Service object. Use sns.NewService().
 type SNSService struct {
 	cred     interfaces.IAWSCredentials
 	region   *regions.Region
@@ -35,6 +35,7 @@ func (s *SNSService) RegionName() string {
 	return s.region.Name()
 }
 
+// Returns the endpoint to the service.
 func (s *SNSService) Endpoint() string {
 	return s.endpoint
 }

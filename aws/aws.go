@@ -13,6 +13,7 @@ import (
 	"bufio"
 	"github.com/twhello/aws-to-go/aws/auth"
 	"github.com/twhello/aws-to-go/aws/regions"
+	"github.com/twhello/aws-to-go/aws/services/autoscaling"
 	"github.com/twhello/aws-to-go/aws/services/cloudwatch"
 	"github.com/twhello/aws-to-go/aws/services/cloudwatchlogs"
 	"github.com/twhello/aws-to-go/aws/services/cognito"
@@ -133,6 +134,16 @@ func NewClientByFile(path, regionName *string) Client {
 /******************************************************************************
  * Service Access Methods
  */
+
+// Auto Scaling is a web service designed to automatically launch or terminate
+// Amazon Elastic Compute Cloud (Amazon EC2) instances based on user-defined policies,
+// schedules, and health checks. This service is used in conjunction with
+// Amazon CloudWatch and Elastic Load Balancing services.
+// [http://docs.aws.amazon.com/AutoScaling/latest/APIReference/Welcome.html]
+func (c Client) AutoScale() *autoscaling.AutoScalingService {
+	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
+	return autoscaling.NewService(cred)
+}
 
 // Amazon CloudWatch is a web service that enables you to publish, monitor, and manage
 // various metrics, as well as configure alarm actions based on data from metrics.

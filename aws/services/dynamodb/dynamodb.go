@@ -21,7 +21,7 @@ import (
 
 const ServiceName = "dynamodb"
 
-// DynamoDB Service struct. Use [dynamodb.NewService(interfaces.IAWSCredentials, *regions.Region) *DynamoDBService].
+// DynamoDB Service struct. Use dynamodb.NewService().
 // [http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/Welcome.html]
 type DynamoDBService struct {
 	cred     interfaces.IAWSCredentials
@@ -39,11 +39,12 @@ func (db *DynamoDBService) RegionName() string {
 	return db.region.Name()
 }
 
+// Returns the endpoint to the service.
 func (db *DynamoDBService) Endpoint() string {
 	return db.endpoint
 }
 
-// Low-level request to S3 service.
+// Low-level request to DynamoDB service.
 func (db *DynamoDBService) SignAndDo(req interfaces.IAWSRequest, dto interface{}) (resp *http.Response, err error) {
 
 	signer := auth.V4Signer{db.cred, db}

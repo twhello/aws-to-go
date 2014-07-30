@@ -16,7 +16,7 @@ import (
 
 const ServiceName = "logs"
 
-// CloudWatchLogsService describes the API interface. Instantiate with swf.NewService().
+// CloudWatchLogsService describes the API interface. Instantiate with cloudwatchlogs.NewService().
 type CloudWatchLogsService struct {
 	cred     interfaces.IAWSCredentials
 	region   *regions.Region
@@ -203,7 +203,7 @@ func (s *CloudWatchLogsService) TestMetricFilter(req *TestMetricFilterRequest) (
 	return
 }
 
-// Creates a new Kinesis Service.
+// Creates a new CloudWatch Logs Service.
 func NewService(cred interfaces.IAWSCredentials, region *regions.Region) *CloudWatchLogsService {
 	return &CloudWatchLogsService{cred, region, "https://" + ServiceName + "." + region.Name() + ".amazonaws.com"}
 }

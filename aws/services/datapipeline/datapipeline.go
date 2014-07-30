@@ -18,7 +18,7 @@ import (
 const ServiceName = "datapipeline"
 
 // DataPipelineService describes the API interface.
-// Instantiate with swf.NewService().
+// Instantiate with datapipeline.NewService().
 type DataPipelineService struct {
 	cred     interfaces.IAWSCredentials
 	region   *regions.Region
@@ -218,7 +218,7 @@ func (s *DataPipelineService) ValidatePipelineDefinition(req *ValidatePipelineDe
 	return
 }
 
-// Creates a new Simple Workflow Service.
+// Creates a new DataPipeline Service.
 func NewService(cred interfaces.IAWSCredentials, region *regions.Region) *DataPipelineService {
 	return &DataPipelineService{cred, region, "https://" + ServiceName + "." + region.Name() + ".amazonaws.com"}
 }

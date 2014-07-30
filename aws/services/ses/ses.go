@@ -35,6 +35,7 @@ func (s *SESService) RegionName() string {
 	return s.region.Name()
 }
 
+// Returns the endpoint to the service.
 func (s *SESService) Endpoint() string {
 	return s.endpoint
 }

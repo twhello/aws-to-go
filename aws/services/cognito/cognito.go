@@ -17,7 +17,7 @@ import (
 
 const ServiceName = "cognito"
 
-// CognitoService describes the API interface. Instantiate with swf.NewService().
+// CognitoService describes the API interface. Instantiate with cognito.NewService().
 type CognitoService struct {
 	cred     interfaces.IAWSCredentials
 	region   *regions.Region
@@ -34,6 +34,7 @@ func (s *CognitoService) RegionName() string {
 	return s.region.Name()
 }
 
+// Returns the endpoint to the service.
 func (s *CognitoService) Endpoint() string {
 	return s.endpoint
 }

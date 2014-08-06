@@ -259,10 +259,10 @@ type AutoScalingInstanceDetails struct {
 // The BlockDeviceMapping data type.
 // [http://docs.aws.amazon.com/AutoScaling/latest/APIReference/API_BlockDeviceMapping.html]
 type BlockDeviceMapping struct {
-	DeviceName  string `xml:"DeviceName"`
-	Ebs         Ebs    `xml:"Ebs,omitempty"`
-	NoDevice    bool   `xml:"NoDevice,omitempty"`
-	VirtualName string `xml:"VirtualName,omitempty"`
+	DeviceName  string `xml:"DeviceName" name:"DeviceName"`
+	Ebs         Ebs    `xml:"Ebs,omitempty" name:"Ebs,omitempty"`
+	NoDevice    bool   `xml:"NoDevice,omitempty" name:"NoDevice,omitempty"`
+	VirtualName string `xml:"VirtualName,omitempty" name:"VirtualName,omitempty"`
 }
 
 // The output of the DescribeAccountLimitsResult action.
@@ -397,7 +397,7 @@ type Instance struct {
 // The InstanceMonitoring data type.
 // [http://docs.aws.amazon.com/AutoScaling/latest/APIReference/API_InstanceMonitoring.html]
 type InstanceMonitoring struct {
-	Enabled bool `xml:"Enabled,omitempty"`
+	Enabled bool `xml:"Enabled,omitempty" name:"Enabled,omitempty"`
 }
 
 // The LaunchConfiguration data type.
@@ -477,11 +477,11 @@ type SuspendedProcess struct {
 // The tag applied to an Auto Scaling group.
 // [http://docs.aws.amazon.com/AutoScaling/latest/APIReference/API_Tag.html]
 type Tag struct {
-	Key               string `xml:"Key"`
-	PropagateAtLaunch bool   `xml:"PropagateAtLaunch,omitempty"`
-	ResourceId        string `xml:"ResourceId,omitempty"`
-	ResourceType      string `xml:"ResourceType,omitempty"`
-	Value             string `xml:"Value,omitempty"`
+	Key               string `xml:"Key" name:"Key"`
+	PropagateAtLaunch bool   `xml:"PropagateAtLaunch,omitempty" name:"PropagateAtLaunch,omitempty"`
+	ResourceId        string `xml:"ResourceId,omitempty" name:"ResourceId,omitempty"`
+	ResourceType      string `xml:"ResourceType,omitempty" name:"ResourceType,omitempty"`
+	Value             string `xml:"Value,omitempty" name:"Value,omitempty"`
 }
 
 // The tag applied to an Auto Scaling group.

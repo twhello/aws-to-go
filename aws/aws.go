@@ -20,6 +20,7 @@ import (
 	"github.com/twhello/aws-to-go/aws/services/cognitosync"
 	"github.com/twhello/aws-to-go/aws/services/datapipeline"
 	"github.com/twhello/aws-to-go/aws/services/dynamodb"
+	"github.com/twhello/aws-to-go/aws/services/ec2"
 	"github.com/twhello/aws-to-go/aws/services/kinesis"
 	"github.com/twhello/aws-to-go/aws/services/s3"
 	"github.com/twhello/aws-to-go/aws/services/ses"
@@ -203,6 +204,15 @@ func (c Client) DataPipeline() *datapipeline.DataPipelineService {
 func (c Client) DynamoDB() *dynamodb.DynamoDBService {
 	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
 	return dynamodb.NewService(cred, regions.Config(c.RegionName))
+}
+
+// Amazon Elastic Compute Cloud (Amazon EC2) is a web service that provides resizeable
+// computing capacity—literally, servers in Amazon's data centers—that you use to build
+// and host your software systems.
+// [http://aws.amazon.com/documentation/ec2/]
+func (c Client) EC2() *ec2.EC2Service {
+	cred := auth.NewCredentials(c.AccessKeyId, c.SecretKey)
+	return ec2.NewService(cred)
 }
 
 // Amazon Kinesis is a managed service that scales elastically for real-time processing

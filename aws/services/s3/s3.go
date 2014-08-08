@@ -231,9 +231,10 @@ func (s3 *S3Service) PutObject(por *PutObjectRequest) (hdrs *PutObjectHeaderResp
 
 	req, err := services.NewServerRequest("PUT", s3.Endpoint()+"/"+por.BucketName+"/"+por.ObjectName, por.Content)
 	if err == nil {
-
-		netutil.MergeHeaders(req.Header(), netutil.MarshalHeader(por.ObjectMetadata))
-
+		
+		if por.ObjectMetadata != nil {
+			netutil.MergeHeaders(req.Header(), netutil.MarshalHeader(por.ObjectMetadata))
+		}
 		var resp *http.Response
 		resp, err = s3.SignAndDo(req, nil)
 		if err == nil {

@@ -76,7 +76,7 @@ type ObjectMetadata struct {
 	ContentEncoding                       string            `name:"Content-Encoding"`
 	ContentType                           string            `name:"Content-Type" default:"binary/octet-stream"`
 	Expect                                string            `name:"Expect"`
-	Expires                               *time.Time        `name:"Expires" format:"Mon, 02 Jan 2006 15:04:05 MST"`
+	Expires                               time.Time        `name:"Expires" format:"Mon, 02 Jan 2006 15:04:05 MST"`
 	Metadata                              map[string]string `name:"X-Amz-Meta-*"`
 	StorageClass                          string            `name:"X-Amz-Storage-Class" default:"STANDARD"`
 	WebsiteRedirectionLocation            string            `name:"X-Amz-Website-Redirect-Location"`
@@ -102,7 +102,7 @@ type ListObjects struct {
 type ResponseHeaderOverrides struct {
 	ResponseContentType        string     `name:"Response-Content-Type"`
 	ResponseContentLanguage    string     `name:"Response-Content-Language"`
-	ResponseExpires            *time.Time `name:"Response-Expires" format:"Mon, 02 Jan 2006 15:04:05 MST"`
+	ResponseExpires            time.Time `name:"Response-Expires" format:"Mon, 02 Jan 2006 15:04:05 MST"`
 	ResponseCacheControl       string     `name:Response-Cache-Control"`
 	ResponseContentDisposition string     `name:"Response-Content-Disposition"`
 	ResponseContentEncoding    string     `name:"Response-Content-Encoding"`
@@ -112,8 +112,8 @@ type ResponseHeaderOverrides struct {
 // [http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGET.html]
 type Constraints struct {
 	Range                                 string     `name:"Range"`
-	IfModifiedSince                       *time.Time `name:"If-Modified-Since" format:"Mon, 02 Jan 2006 15:04:05 MST"`
-	IfUnmodifiedSince                     *time.Time `name:"If-Unmodified-Since" format:"Mon, 02 Jan 2006 15:04:05 MST"`
+	IfModifiedSince                       time.Time `name:"If-Modified-Since" format:"Mon, 02 Jan 2006 15:04:05 MST"`
+	IfUnmodifiedSince                     time.Time `name:"If-Unmodified-Since" format:"Mon, 02 Jan 2006 15:04:05 MST"`
 	IfMatch                               string     `name:"If-Match"`
 	InNoneMatch                           string     `name:"If-None-Match"`
 	ServerSideEncryptionCustomerAlgorithm string     `name:"X-Amz-Server-Side-Encryption-Customer-Algorithm"`

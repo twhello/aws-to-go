@@ -11,23 +11,23 @@ package aws
 
 import (
 	"bufio"
-	"github.com/twhello/aws-to-go/aws/auth"
-	"github.com/twhello/aws-to-go/aws/regions"
-	"github.com/twhello/aws-to-go/aws/services/autoscaling"
-	"github.com/twhello/aws-to-go/aws/services/cloudwatch"
-	"github.com/twhello/aws-to-go/aws/services/cloudwatchlogs"
-	"github.com/twhello/aws-to-go/aws/services/cognito"
-	"github.com/twhello/aws-to-go/aws/services/cognitosync"
-	"github.com/twhello/aws-to-go/aws/services/datapipeline"
-	"github.com/twhello/aws-to-go/aws/services/dynamodb"
-	"github.com/twhello/aws-to-go/aws/services/ec2"
-	"github.com/twhello/aws-to-go/aws/services/kinesis"
-	"github.com/twhello/aws-to-go/aws/services/s3"
-	"github.com/twhello/aws-to-go/aws/services/ses"
-	"github.com/twhello/aws-to-go/aws/services/simpledb"
-	"github.com/twhello/aws-to-go/aws/services/sns"
-	"github.com/twhello/aws-to-go/aws/services/sqs"
-	"github.com/twhello/aws-to-go/aws/services/swf"
+	"github.com/twhello/aws-to-go/auth"
+	"github.com/twhello/aws-to-go/regions"
+	"github.com/twhello/aws-to-go/services/autoscaling"
+	"github.com/twhello/aws-to-go/services/cloudwatch"
+	"github.com/twhello/aws-to-go/services/cloudwatchlogs"
+	"github.com/twhello/aws-to-go/services/cognito"
+	"github.com/twhello/aws-to-go/services/cognitosync"
+	"github.com/twhello/aws-to-go/services/datapipeline"
+	"github.com/twhello/aws-to-go/services/dynamodb"
+	"github.com/twhello/aws-to-go/services/ec2"
+	"github.com/twhello/aws-to-go/services/kinesis"
+	"github.com/twhello/aws-to-go/services/s3"
+	"github.com/twhello/aws-to-go/services/ses"
+	"github.com/twhello/aws-to-go/services/simpledb"
+	"github.com/twhello/aws-to-go/services/sns"
+	"github.com/twhello/aws-to-go/services/sqs"
+	"github.com/twhello/aws-to-go/services/swf"
 	"log"
 	"os"
 	"strings"
@@ -45,7 +45,14 @@ type Client struct {
 // (secretKey string) AWS secret key.
 // (regionName *string) Name of region. nil defaults to US_EAST_1.
 func NewClient(accessKeyId, secretKey string, regionName *string) Client {
-	return Client{accessKeyId, secretKey, *regionName}
+	
+	var region string
+	if regionName == nil {
+		region = "us-east-1"
+	} else {
+		region = *regionName
+	}
+	return Client{accessKeyId, secretKey, region}
 }
 
 // Creates a new Client from environmental variables AWS_ACCESS_KEY_ID and AWS_SECRET_KEY.

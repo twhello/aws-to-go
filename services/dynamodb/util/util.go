@@ -1,7 +1,7 @@
 package util
 
 import (
-	"github.com/twhello/aws-to-go/aws/services/dynamodb"
+	"github.com/twhello/aws-to-go/services/dynamodb"
 	"errors"
 	"time"
 )

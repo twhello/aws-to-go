@@ -48,6 +48,7 @@ func NewClientRequest(method, rawurl string, queryString interface{}) (*AWSReque
 	}
 
 	var tv url.Values
+	fmt.Println(queryString)
 	if queryString != nil {
 		tv = netutil.MarshalValues(queryString)
 	}

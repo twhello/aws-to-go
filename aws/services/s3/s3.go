@@ -189,9 +189,9 @@ func (s3 *S3Service) GetObject(gor *GetObjectRequest) (content io.ReadCloser, hd
 
 	req, err := services.NewClientRequest("GET", s3.Endpoint()+"/"+gor.BucketName+"/"+gor.ObjectName, gor.Constraints)
 	if err == nil {
-
+		
 		netutil.MergeHeaders(req.Header(), netutil.MarshalHeader(gor.Constraints))
-
+		
 		var resp *http.Response
 		resp, err = s3.SignAndDo(req, nil)
 		if err == nil {
@@ -232,9 +232,8 @@ func (s3 *S3Service) PutObject(por *PutObjectRequest) (hdrs *PutObjectHeaderResp
 	req, err := services.NewServerRequest("PUT", s3.Endpoint()+"/"+por.BucketName+"/"+por.ObjectName, por.Content)
 	if err == nil {
 		
-		if por.ObjectMetadata != nil {
-			netutil.MergeHeaders(req.Header(), netutil.MarshalHeader(por.ObjectMetadata))
-		}
+		netutil.MergeHeaders(req.Header(), netutil.MarshalHeader(por.ObjectMetadata))
+
 		var resp *http.Response
 		resp, err = s3.SignAndDo(req, nil)
 		if err == nil {

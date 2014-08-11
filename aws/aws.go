@@ -45,7 +45,14 @@ type Client struct {
 // (secretKey string) AWS secret key.
 // (regionName *string) Name of region. nil defaults to US_EAST_1.
 func NewClient(accessKeyId, secretKey string, regionName *string) Client {
-	return Client{accessKeyId, secretKey, *regionName}
+	
+	var region string
+	if regionName == nil {
+		region = "us-east-1"
+	} else {
+		region = *regionName
+	}
+	return Client{accessKeyId, secretKey, region}
 }
 
 // Creates a new Client from environmental variables AWS_ACCESS_KEY_ID and AWS_SECRET_KEY.

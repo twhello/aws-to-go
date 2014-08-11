@@ -116,6 +116,9 @@ func marshaller(in interface{}, out map[string][]string) {
 		t = incon.Type()
 	} else {
 		e = reflect.ValueOf(in).Elem()
+		if !e.IsValid() {
+			return
+		}
 		t = e.Type()
 	}
 

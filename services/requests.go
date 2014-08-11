@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -48,7 +47,6 @@ func NewClientRequest(method, rawurl string, queryString interface{}) (*AWSReque
 	}
 
 	var tv url.Values
-	fmt.Println(queryString)
 	if queryString != nil {
 		tv = netutil.MarshalValues(queryString)
 	}
@@ -162,8 +160,6 @@ func (r *AWSRequest) buildBody() (io.ReadCloser, int64) {
 	default:
 		b, err = json.Marshal(r.body)
 	}
-
-	fmt.Printf("services.requests.go: %s \n", b)
 
 	if err != nil {
 		panic(err.Error())

@@ -33,7 +33,7 @@ func DoRequest(awsreq interfaces.IAWSRequest, dto interface{}, eval *EvalService
 	resp = nil
 	err = nil
 	req := awsreq.BuildRequest()
-	fmt.Printf("REQUEST> %+v \n", req)
+	//fmt.Printf("REQUEST> %+v \n", req)
 
 	RETRY_ATTEMPTS := Config().RetryAttempts()
 	retries := uint(0)
@@ -47,7 +47,7 @@ RETRY:
 	}
 
 	resp, err = consumeResponse(resp, eval)
-	fmt.Printf("RESP> %+v \nERR: %+v \n", resp, err)
+	//fmt.Printf("RESP> %+v \nERR: %+v \n", resp, err)
 	if err == nil {
 
 		if dto != nil {

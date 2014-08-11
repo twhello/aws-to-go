@@ -7,6 +7,7 @@ import (
 	"encoding/gob"
 	"log"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -421,7 +422,7 @@ func Unmarshal(item map[string]dynamodb.AttributeValue, v interface{}) {
 
 					case "bool":
 						if attrType == dynamodb.STRING {
-							f.SetBool(attribute.Value() == "true")
+							f.SetBool(strings.ToLower(attribute.Value()) == "true")
 						} else if attrType == dynamodb.NUMBER {
 							f.SetBool(attribute.N == "1")
 						} else {
@@ -440,7 +441,7 @@ func Unmarshal(item map[string]dynamodb.AttributeValue, v interface{}) {
 							vLen := len(attribute.NS)
 							slice := reflect.MakeSlice(f.Type(), vLen, vLen)
 							for i, sVal := range attribute.NS {
-								slice.Index(i).SetBool(sVal == "1")
+								slice.Index(i).SetBool(strings.ToLower(sVal) == "1")
 							}
 							f.Set(slice)
 						} else {

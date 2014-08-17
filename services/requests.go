@@ -1,10 +1,10 @@
 package services
 
 import (
-	"github.com/twhello/aws-to-go/util/netutil"
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"github.com/twhello/aws-to-go/util/netutil"
 	"io"
 	"io/ioutil"
 	"net/http"

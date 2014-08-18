@@ -3,7 +3,7 @@ aws-to-go
 
 Go packages to interact with Amazon Web Services.
 
-***Notice:** These packages are NOT production ready. Testing and code coverage is minimal. Most errors will likely be typos or misconfigured marshalling tags in the datatypes.*
+**Notice: These packages are NOT production ready. Testing and code coverage is minimal. Most errors will likely be typos or misconfigured marshalling tags in the datatypes.**
 
 Here at Twhello, we are unabashed fans of the Go language and Amazon Web Services.  Unfortunately, there is no official AWS SDK for Go. While there are some promising alternatives, they are inconsistent and incomplete. We decided to write our own AWS SDK for Go and share it with the community.
 
@@ -65,7 +65,7 @@ list, err := client.S3().ListBuckets()
 List objects in the specified bucket.
 ```go
 req := s3.NewListObjectsRequest("s3-bucket")
-result2, err := client.S3().ListObjects(req)
+object, err := client.S3().ListObjects(req)
 ```
 Delete the specified bucket.
 ```go

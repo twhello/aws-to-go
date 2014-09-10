@@ -1,3 +1,20 @@
+/*
+The following AWS services are available:
+
+- Auto Scaling
+- Amazon CloudWatch
+- Amazon Cognito
+- AWS Data Pipeline
+- Amazon DynamoDB
+- Amazon EC2
+- Amazon Kinesis
+- Amazon Simple Storage Service (S3)
+- Amazon Simple Email Service (SES)
+- Amazon SimpleDB
+- Amazon Simple Notification Service (SNS)
+- Amazon Simple Queue Service (SQS)
+- Amazon Simple Workflow Service (SWF)
+*/
 package services
 
 import (
@@ -15,27 +32,34 @@ import (
 
 var httpClient = &http.Client{
 	Transport: &http.Transport{
-		MaxIdleConnsPerHost:   10,
+		MaxIdleConnsPerHost:   25,
 		ResponseHeaderTimeout: 30 * time.Second,
 	},
 }
 
-// Returns a shared http.Client.
+// Returns the shared http.Client.
+// Default settings: 25 MaxIdleConnsPerHost and 30 second ResponseHeaderTimeout.
 func HttpClient() *http.Client {
-	configStatic.m.RLock()
-	defer configStatic.m.RUnlock()
+	configSetting.m.RLock()
+	defer configSetting.m.RUnlock()
 	return httpClient
 }
 
-// Submits the signed request to AWS and, if not nil, unmarshals the XML response to the 'dto' interface, or returns an error or ServiceError.
+// Submits the signed request to AWS and, if not nil, unmarshals the XML
+// response to the 'dto' interface, or returns an error or ServiceError.
 func DoRequest(awsreq interfaces.IAWSRequest, dto interface{}, eval *EvalServiceResponse) (resp *http.Response, err interfaces.IServiceError) {
 
+	config := Config()
+	isDebug := config.IsDebugging()
 	resp = nil
 	err = nil
 	req := awsreq.BuildRequest()
-	//fmt.Printf("REQUEST> %+v \n", req)
 
-	RETRY_ATTEMPTS := Config().RetryAttempts()
+	if isDebug {
+		log.Printf("REQUEST  > %+v \n", req)
+	}
+
+	RETRY_ATTEMPTS := config.RetryAttempts()
 	retries := uint(0)
 
 RETRY:
@@ -47,7 +71,11 @@ RETRY:
 	}
 
 	resp, err = consumeResponse(resp, eval)
-	//fmt.Printf("RESP> %+v \nERR: %+v \n", resp, err)
+
+	if isDebug {
+		log.Printf("RESPONSE > %+v \nERROR    > %+v \n", resp, err)
+	}
+
 	if err == nil {
 
 		if dto != nil {
@@ -60,6 +88,9 @@ RETRY:
 
 	} else if err.IsRetry() && retries < RETRY_ATTEMPTS {
 
+		if isDebug {
+			log.Printf("RETRY   > %s of %s in %s milliseconds.\n", (retries + 1), RETRY_ATTEMPTS, (1 << retries * 100))
+		}
 		time.Sleep(time.Millisecond * (1 << retries * 100))
 		retries++
 		goto RETRY

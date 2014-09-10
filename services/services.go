@@ -60,7 +60,6 @@ RETRY:
 
 	} else if err.IsRetry() && retries < RETRY_ATTEMPTS {
 
-		log.Printf("Throttling Request (%d): %+v \n", retries, req)
 		time.Sleep(time.Millisecond * (1 << retries * 100))
 		retries++
 		goto RETRY

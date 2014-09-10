@@ -1,10 +1,10 @@
 package services
 
 import (
-	"github.com/twhello/aws-to-go/interfaces"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/twhello/aws-to-go/interfaces"
 	"io"
 	"log"
 	"net/http"
@@ -60,6 +60,7 @@ RETRY:
 
 	} else if err.IsRetry() && retries < RETRY_ATTEMPTS {
 
+		log.Printf("Throttling Request (%d): %+v \n", retries, req)
 		time.Sleep(time.Millisecond * (1 << retries * 100))
 		retries++
 		goto RETRY
@@ -75,7 +76,7 @@ func consumeResponse(response *http.Response, eval *EvalServiceResponse) (*http.
 		srvErr := NewServiceError(response.StatusCode, response.Status, "", "")
 		defer response.Body.Close()
 		eval.Decode(response.Body, srvErr)
-		srvErr.SetRetry(eval.Matches(response.StatusCode, srvErr.ErrorMessage()))
+		srvErr.SetRetry(eval.Matches(response.StatusCode, srvErr.ErrorType()))
 
 		log.Printf("Service Error Response\n%+v\n%+v\n", response, srvErr)
 
@@ -138,7 +139,7 @@ func (e EvalServiceResponse) Decode(r io.Reader, v interface{}) error {
 // Note: Errors match using strings.Contains().
 func (r *EvalServiceResponse) Matches(code int, err string) bool {
 
-	if r.Codes != nil && sort.SearchInts(r.Codes, code) == len(r.Codes) {
+	if r.Codes != nil && sort.SearchInts(r.Codes, code) < len(r.Codes) {
 		return true
 	}
 

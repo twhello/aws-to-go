@@ -107,9 +107,7 @@ func consumeResponse(response *http.Response, eval *EvalServiceResponse) (*http.
 		defer response.Body.Close()
 		eval.Decode(response.Body, srvErr)
 		srvErr.SetRetry(eval.Matches(response.StatusCode, srvErr.ErrorType()))
-
-		log.Printf("Service Error Response\n%+v\n%+v\n", response, srvErr)
-
+		
 		return response, srvErr
 	}
 

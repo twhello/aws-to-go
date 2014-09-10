@@ -56,7 +56,7 @@ func DoRequest(awsreq interfaces.IAWSRequest, dto interface{}, eval *EvalService
 	req := awsreq.BuildRequest()
 
 	if isDebug {
-		log.Printf("REQUEST  > %+v \n", req)
+		log.Printf("\nREQUEST  > %+v \n", req)
 	}
 
 	RETRY_ATTEMPTS := config.RetryAttempts()
@@ -73,7 +73,7 @@ RETRY:
 	resp, err = consumeResponse(resp, eval)
 
 	if isDebug {
-		log.Printf("RESPONSE > %+v \nERROR    > %+v \n", resp, err)
+		log.Printf("\nRESPONSE > %+v \n", resp)
 	}
 
 	if err == nil {
@@ -86,14 +86,21 @@ RETRY:
 			}
 		}
 
-	} else if err.IsRetry() && retries < RETRY_ATTEMPTS {
+	} else {
 
 		if isDebug {
-			log.Printf("RETRY   > %s of %s in %s milliseconds.\n", (retries + 1), RETRY_ATTEMPTS, (1 << retries * 100))
+			log.Printf("\nERROR    > %+v \n", err)
 		}
-		time.Sleep(time.Millisecond * (1 << retries * 100))
-		retries++
-		goto RETRY
+
+		if err.IsRetry() && retries < RETRY_ATTEMPTS {
+
+			if isDebug {
+				log.Printf("\nRETRY   > %s of %s in %s milliseconds.\n", (retries + 1), RETRY_ATTEMPTS, (1 << retries * 100))
+			}
+			time.Sleep(time.Millisecond * (1 << retries * 100))
+			retries++
+			goto RETRY
+		}
 	}
 
 	return
@@ -107,7 +114,7 @@ func consumeResponse(response *http.Response, eval *EvalServiceResponse) (*http.
 		defer response.Body.Close()
 		eval.Decode(response.Body, srvErr)
 		srvErr.SetRetry(eval.Matches(response.StatusCode, srvErr.ErrorType()))
-		
+
 		return response, srvErr
 	}
 
@@ -167,12 +174,14 @@ func (e EvalServiceResponse) Decode(r io.Reader, v interface{}) error {
 // Note: Errors match using strings.Contains().
 func (r *EvalServiceResponse) Matches(code int, err string) bool {
 
+	log.Printf("Matches: sort.SearchInts(%s, %s) = %s \n", r.Codes, code, sort.SearchInts(r.Codes, code))
 	if r.Codes != nil && sort.SearchInts(r.Codes, code) < len(r.Codes) {
 		return true
 	}
 
 	if r.Errors != nil {
 		for _, e := range r.Errors {
+			log.Printf("Matches: strings.Contains(%s, %s) = %s \n", err, e, strings.Contains(err, e))
 			if strings.Contains(err, e) {
 				return true
 			}
@@ -223,5 +232,6 @@ func (err ServiceError) IsRetry() bool {
 }
 
 func (err ServiceError) Error() string {
-	return fmt.Sprintf("Code: %d, Status: %s, Type: %s, Message: %s \n", err.ErrCode, err.ErrStatus, err.ErrType, err.ErrMessage)
+	return fmt.Sprintf("Code: %d, Status: %s, Type: %s, Message: %s, Retry: %s \n",
+		err.ErrCode, err.ErrStatus, err.ErrType, err.ErrMessage, err.isRetry)
 }

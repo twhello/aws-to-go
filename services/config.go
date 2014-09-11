@@ -40,7 +40,8 @@ func (c *configuration) RetryAttempts() uint {
 	return c.retryAttempts
 }
 
-// Set the number of retry attempts when a service request returns a service or throttle exceptio.
+// Set the number of retry attempts when a service request returns a service or throttle exception.
+// Backoff is calculated by math.Min(2^attemptNum*50, 2000)
 func (c *configuration) SetRetryAttempts(numRetries uint) {
 	c.m.Lock()
 	c.retryAttempts = numRetries

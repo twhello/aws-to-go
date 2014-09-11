@@ -24,6 +24,7 @@ import (
 	"github.com/twhello/aws-to-go/interfaces"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"sort"
 	"strings"
@@ -90,12 +91,14 @@ RETRY:
 	} else {
 
 		if err.IsRetry() && retries < RETRY_ATTEMPTS {
-
-			if isDebug {
-				log.Printf("\nRETRY   > %d of %d in %d milliseconds.\n", (retries + 1), RETRY_ATTEMPTS, (1 << retries * 50))
-			}
-			time.Sleep(time.Millisecond * (1 << retries * 50))
+			
 			retries++
+			sleep := math.Min(float64(2^retries * 50), 2000)
+			
+			if isDebug {
+				log.Printf("\nRETRY   > %d of %d in %d milliseconds.\n", retries, RETRY_ATTEMPTS, sleep)
+			}
+			time.Sleep(time.Millisecond * time.Duration(sleep))
 			goto RETRY
 		}
 	}

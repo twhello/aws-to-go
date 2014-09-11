@@ -205,31 +205,31 @@ func NewServiceError(code int, status, errType, errMessage string) *ServiceError
 	return &ServiceError{code, status, errType, errMessage, false}
 }
 
-func (err ServiceError) SetRetry(val bool) {
+func (err *ServiceError) SetRetry(val bool) {
 	err.isRetry = val
 }
 
-func (err ServiceError) Code() int {
+func (err *ServiceError) Code() int {
 	return err.ErrCode
 }
 
-func (err ServiceError) Status() string {
+func (err *ServiceError) Status() string {
 	return err.ErrStatus
 }
 
-func (err ServiceError) ErrorType() string {
+func (err *ServiceError) ErrorType() string {
 	return err.ErrType
 }
 
-func (err ServiceError) ErrorMessage() string {
+func (err *ServiceError) ErrorMessage() string {
 	return err.ErrMessage
 }
 
-func (err ServiceError) IsRetry() bool {
+func (err *ServiceError) IsRetry() bool {
 	return err.isRetry
 }
 
-func (err ServiceError) Error() string {
+func (err *ServiceError) Error() string {
 	return fmt.Sprintf("Code: %d, Status: %s, Type: %s, Message: %s, Retry: %t \n",
 		err.ErrCode, err.ErrStatus, err.ErrType, err.ErrMessage, err.isRetry)
 }

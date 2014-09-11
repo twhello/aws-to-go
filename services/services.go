@@ -182,8 +182,11 @@ func (r *EvalServiceResponse) Matches(code int, errorType string) bool {
 		}
 	}
 
+	log.Printf(">>> Errors: %s %s", code, errorType)
 	if r.Errors != nil {
+		log.Printf(">>> %s \n", r.Errors)
 		for _, e := range r.Errors {
+			log.Printf(">>> strings.Contains(%s, %s) = %s", errorType, e, strings.Contains(errorType, e))
 			if strings.Contains(errorType, e) {
 				return true
 			}

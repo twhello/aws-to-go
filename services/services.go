@@ -53,17 +53,18 @@ func DoRequest(awsreq interfaces.IAWSRequest, dto interface{}, eval *EvalService
 	err = nil
 	config := Config()
 	isDebug := config.IsDebugging()
-	req := awsreq.BuildRequest()
-
-	if isDebug {
-		log.Printf("\nREQUEST  > %+v \n", req)
-	}
 
 	RETRY_ATTEMPTS := config.RetryAttempts()
 	retries := uint(0)
 
 RETRY:
 
+	req := awsreq.BuildRequest()
+
+	if isDebug {
+		log.Printf("\nREQUEST  > %+v \n", req)
+	}
+	
 	resp, e := HttpClient().Do(req)
 	if e != nil {
 		return nil, NewServiceError(100, "100 HTTP Error", "", e.Error())
@@ -91,9 +92,9 @@ RETRY:
 		if err.IsRetry() && retries < RETRY_ATTEMPTS {
 
 			if isDebug {
-				log.Printf("\nRETRY   > %d of %d in %d milliseconds.\n", (retries + 1), RETRY_ATTEMPTS, (1 << retries * 100))
+				log.Printf("\nRETRY   > %d of %d in %d milliseconds.\n", (retries + 1), RETRY_ATTEMPTS, (1 << retries * 50))
 			}
-			time.Sleep(time.Millisecond * (1 << retries * 100))
+			time.Sleep(time.Millisecond * (1 << retries * 50))
 			retries++
 			goto RETRY
 		}

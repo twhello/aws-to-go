@@ -70,7 +70,7 @@ RETRY:
 		return nil, err
 	}
 
-	resp, err = consumeResponse(resp, eval)
+	resp, err = evalResponse(resp, eval)
 
 	if isDebug {
 		log.Printf("\nRESPONSE > %+v \n", resp)
@@ -106,13 +106,13 @@ RETRY:
 	return
 }
 
-func consumeResponse(response *http.Response, eval *EvalServiceResponse) (*http.Response, interfaces.IServiceError) {
+func evalResponse(response *http.Response, eval *EvalServiceResponse) (*http.Response, interfaces.IServiceError) {
 
 	if response.StatusCode >= 400 {
 
 		srvErr := NewServiceError(response.StatusCode, response.Status, "", "")
-		defer response.Body.Close()
 		eval.Decode(response.Body, srvErr)
+		response.Body.Close()
 		srvErr.SetRetry(eval.Matches(response.StatusCode, srvErr.ErrorType()))
 
 		return response, srvErr
@@ -172,17 +172,19 @@ func (e EvalServiceResponse) Decode(r io.Reader, v interface{}) error {
 
 // Returns true if the collection contains the code or error.
 // Note: Errors match using strings.Contains().
-func (r *EvalServiceResponse) Matches(code int, err string) bool {
+func (r *EvalServiceResponse) Matches(code int, errorType string) bool {
 
-	log.Printf("Matches: sort.SearchInts(%s, %s) = %s \n", r.Codes, code, sort.SearchInts(r.Codes, code))
-	if r.Codes != nil && sort.SearchInts(r.Codes, code) < len(r.Codes) {
-		return true
+	if r.Codes != nil {
+		for _, v := range r.Codes {
+			if v == code {
+				return true
+			}
+		}
 	}
 
 	if r.Errors != nil {
 		for _, e := range r.Errors {
-			log.Printf("Matches: strings.Contains(%s, %s) = %s \n", err, e, strings.Contains(err, e))
-			if strings.Contains(err, e) {
+			if strings.Contains(errorType, e) {
 				return true
 			}
 		}

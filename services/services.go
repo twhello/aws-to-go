@@ -49,10 +49,10 @@ func HttpClient() *http.Client {
 // response to the 'dto' interface, or returns an error or ServiceError.
 func DoRequest(awsreq interfaces.IAWSRequest, dto interface{}, eval *EvalServiceResponse) (resp *http.Response, err interfaces.IServiceError) {
 
-	config := Config()
-	isDebug := config.IsDebugging()
 	resp = nil
 	err = nil
+	config := Config()
+	isDebug := config.IsDebugging()
 	req := awsreq.BuildRequest()
 
 	if isDebug {
@@ -66,14 +66,14 @@ RETRY:
 
 	resp, e := HttpClient().Do(req)
 	if e != nil {
-		err = NewServiceError(100, "100 HTTP Error", "", e.Error())
-		return nil, err
+		return nil, NewServiceError(100, "100 HTTP Error", "", e.Error())
 	}
 
 	resp, err = evalResponse(resp, eval)
 
 	if isDebug {
 		log.Printf("\nRESPONSE > %+v \n", resp)
+		log.Printf("\nERROR    > %+v \n", err)
 	}
 
 	if err == nil {
@@ -88,14 +88,10 @@ RETRY:
 
 	} else {
 
-		if isDebug {
-			log.Printf("\nERROR    > %+v \n", err)
-		}
-
 		if err.IsRetry() && retries < RETRY_ATTEMPTS {
 
 			if isDebug {
-				log.Printf("\nRETRY   > %s of %s in %s milliseconds.\n", (retries + 1), RETRY_ATTEMPTS, (1 << retries * 100))
+				log.Printf("\nRETRY   > %d of %d in %d milliseconds.\n", (retries + 1), RETRY_ATTEMPTS, (1 << retries * 100))
 			}
 			time.Sleep(time.Millisecond * (1 << retries * 100))
 			retries++
@@ -182,11 +178,8 @@ func (r *EvalServiceResponse) Matches(code int, errorType string) bool {
 		}
 	}
 
-	log.Printf(">>> Errors: %s %s", code, errorType)
 	if r.Errors != nil {
-		log.Printf(">>> %s \n", r.Errors)
 		for _, e := range r.Errors {
-			log.Printf(">>> strings.Contains(%s, %s) = %s", errorType, e, strings.Contains(errorType, e))
 			if strings.Contains(errorType, e) {
 				return true
 			}
@@ -204,7 +197,7 @@ type ServiceError struct {
 	ErrStatus  string `xml:"-" json:"-"`
 	ErrType    string `xml:"Error>Code" json:"__type"`
 	ErrMessage string `xml:"Error>Message" json:"message"`
-	isRetry    bool
+	isRetry    bool   `xml:"-" json:"-"`
 }
 
 // Creates a new ServiceError.
@@ -237,6 +230,6 @@ func (err ServiceError) IsRetry() bool {
 }
 
 func (err ServiceError) Error() string {
-	return fmt.Sprintf("Code: %d, Status: %s, Type: %s, Message: %s, Retry: %s \n",
+	return fmt.Sprintf("Code: %d, Status: %s, Type: %s, Message: %s, Retry: %t \n",
 		err.ErrCode, err.ErrStatus, err.ErrType, err.ErrMessage, err.isRetry)
 }

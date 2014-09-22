@@ -65,7 +65,7 @@ RETRY:
 	if isDebug {
 		log.Printf("\nREQUEST  > %+v \n", req)
 	}
-	
+
 	resp, e := HttpClient().Do(req)
 	if e != nil {
 		return nil, NewServiceError(100, "100 HTTP Error", "", e.Error())
@@ -91,10 +91,10 @@ RETRY:
 	} else {
 
 		if err.IsRetry() && retries < RETRY_ATTEMPTS {
-			
+
 			retries++
-			sleep := math.Min(float64(2^retries * 50), 2000)
-			
+			sleep := math.Min(float64(2^retries*50), 2000)
+
 			if isDebug {
 				log.Printf("\nRETRY   > %d of %d in %d milliseconds.\n", retries, RETRY_ATTEMPTS, sleep)
 			}

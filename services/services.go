@@ -169,7 +169,7 @@ func NewEvalServiceResponse(decoder func(io.Reader, interface{}) error, codes []
 func (e EvalServiceResponse) Decode(r io.Reader, v interface{}) error {
 	return e.Decoder(r, v)
 }
-
+ 
 // Returns true if the collection contains the code or error.
 // Note: Errors match using strings.Contains().
 func (r *EvalServiceResponse) Matches(code int, errorType string) bool {
